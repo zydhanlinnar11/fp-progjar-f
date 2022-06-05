@@ -16,18 +16,18 @@ class GameClient(ConnectionListener):
         self._running = True
         self._display_surf = pygame.display.set_mode(
             self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
-        self.__scene: 'BaseScene.BaseScene' = MainMenuScene.MainMenuScene(
-            display_surface=self._display_surf)
+        self.__scene: 'BaseScene' = MainMenuScene(
+            self._display_surf, self)
 
     def Network(self, data):
-        print(data)
-        self.Send({"action": "move"})
+        self.__scene.handle_network(data)
 
     def __handle_cleanup(self):
         pygame.quit()
 
     def run_game(self):
         while(self._running):
+            self._display_surf.fill((0, 0, 0))
             connection.Pump()
             self.Pump()
             events = pygame.event.get()

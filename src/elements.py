@@ -32,8 +32,6 @@ class Button:
 
     def __handle_click(self, event: 'pygame.event.Event'):
         (click_x, click_y) = event.pos
-        print(f'Button {self.__text} clicked.')
-        print(self.__click_handler)
         if click_x < self.__x or click_x > (self.__x + self.__width) or click_y < self.__y or click_y > (self.__y + self.__height) or type(self.__click_handler) == NoneType:
             return
         self.__click_handler()
