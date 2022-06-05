@@ -14,15 +14,26 @@ rooms: 'dict[str, list[ClientChannel]]' = {}
 
 class ClientChannel(Channel):
     def Network(self, data):
-        print(data)
+        pass
 
-    def Network_createroom(self, data):
+    def Network_createroom(self, data: 'dict'):
         room_id = ''.join(choices(ascii_uppercase + digits, k=6))
         while room_id in available_room:
             room_id = ''.join(choices(ascii_uppercase + digits, k=6))
         self.Send({'action': 'createroomresponse', 'roomid': room_id})
+        available_room.append(room_id)
         rooms[room_id] = []
         rooms[room_id].append(self)
+
+    def Network_deleteroom(self, data: 'dict'):
+        room_id = data.get('room_id')
+        try:
+            rooms.pop(room_id)
+            available_room.remove(room_id)
+        except ValueError:
+            pass
+        except KeyError:
+            pass
 
 
 class GameServer(Server):

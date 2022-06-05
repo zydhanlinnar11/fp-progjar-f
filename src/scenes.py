@@ -113,6 +113,8 @@ class CreateRoomScene(BaseScene):
         self.__buttons.append(back_button)
 
     def __handle_back(self):
+        self._network_client.Send(
+            {'action': 'deleteroom', 'room_id': self.__room_id})
         self._scene = MainMenuScene(
             self._display_surface, self._network_client)
 
