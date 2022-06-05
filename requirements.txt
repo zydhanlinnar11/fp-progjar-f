@@ -3,5 +3,6 @@ cffi==1.14.5
 greenlet==0.4.13
 PodSixNet==0.11.0
 pycodestyle==2.8.0
+pygame==2.1.2
 readline==6.2.4.1
 toml==0.10.2
