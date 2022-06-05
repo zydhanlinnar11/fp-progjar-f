@@ -16,6 +16,3 @@ class MainMenuScene(BaseScene):
         pygame.draw.rect(self._display_surface, (255, 255, 0),
                          pygame.Rect(30, 30, 60, 60),  2)
         pygame.display.flip()
-
-    def get_next_scene(self) -> 'BaseScene':
-        return self
