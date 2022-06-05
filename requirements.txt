@@ -1,0 +1,7 @@
+autopep8==1.6.0
+cffi==1.14.5
+greenlet==0.4.13
+PodSixNet==0.11.0
+pycodestyle==2.8.0
+readline==6.2.4.1
+toml==0.10.2
