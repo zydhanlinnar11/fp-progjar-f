@@ -35,6 +35,21 @@ class ClientChannel(Channel):
         except KeyError:
             pass
 
+    def Network_joinroom(self, data: 'dict'):
+        room_id = data.get('room_id')
+        is_room_exist = room_id in available_room and room_id in rooms
+        if not is_room_exist:
+            self.Send({'action': 'joinroomerror',
+                      'message': "Room doesn't exist"})
+            return
+        if len(rooms[room_id]) != 1:
+            self.Send({'action': 'joinroomerror',
+                      'message': "Room is full"})
+            return
+        rooms[room_id].append(self)
+        for channel in rooms[room_id]:
+            channel.Send({'action': 'playgame', 'room_id': room_id})
+
 
 class GameServer(Server):
     channelClass = ClientChannel
