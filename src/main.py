@@ -30,10 +30,11 @@ class GameClient(ConnectionListener):
         while(self._running):
             connection.Pump()
             self.Pump()
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     self._running = False
-            self.__scene.handle_game_event()
+            self.__scene.handle_game_event(events)
             self.__scene.handle_game_loop()
             self.__scene.handle_game_render()
             self.__scene = self.__scene.get_next_scene()

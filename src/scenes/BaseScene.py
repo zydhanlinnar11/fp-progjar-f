@@ -8,7 +8,7 @@ class BaseScene(ABC):
         self._scene = self
 
     @abstractmethod
-    def handle_game_event(self):
+    def handle_game_event(self, events: 'list[pygame.event.Event]'):
         pass
 
     @abstractmethod
