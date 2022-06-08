@@ -17,6 +17,7 @@ class ClientChannel(Channel):
         pass
 
     def Network_createroom(self, data: 'dict'):
+        print(data)
         room_id = ''.join(choices(ascii_uppercase + digits, k=6))
         while room_id in available_room:
             room_id = ''.join(choices(ascii_uppercase + digits, k=6))
