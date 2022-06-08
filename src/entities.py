@@ -8,10 +8,10 @@ class Dice:
 
 
 class Player:
-    def __init__(self, id: 'int') -> None:
+    def __init__(self, id: 'str') -> None:
         self.__id = id
 
-    def get_id(self) -> int:
+    def get_id(self) -> 'str':
         return self.__id
 
 
@@ -37,11 +37,11 @@ class CharacterColor(Enum):
 
 
 class Character:
-    def __init__(self, player_id: 'int', color: 'CharacterColor') -> None:
+    def __init__(self, player_id: 'str', color: 'CharacterColor') -> None:
         self.__player_id = player_id
         self.__color = color
 
-    def get_player_id(self) -> 'int':
+    def get_player_id(self) -> 'str':
         return self.__player_id
 
     def get_color(self) -> 'CharacterColor':

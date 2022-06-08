@@ -1,9 +1,13 @@
+import pickle
 from random import choices
+import random
 from string import ascii_uppercase, digits
 from time import sleep
 from typing import Tuple
 from PodSixNet.Channel import Channel
 from PodSixNet.Server import Server
+
+from entities import Player
 
 SERVER_HOST: "str" = "localhost"
 SERVER_PORT: "int" = 5071
@@ -17,7 +21,6 @@ class ClientChannel(Channel):
         pass
 
     def Network_createroom(self, data: 'dict'):
-        print(data)
         room_id = ''.join(choices(ascii_uppercase + digits, k=6))
         while room_id in available_room:
             room_id = ''.join(choices(ascii_uppercase + digits, k=6))
@@ -50,6 +53,22 @@ class ClientChannel(Channel):
         rooms[room_id].append(self)
         for channel in rooms[room_id]:
             channel.Send({'action': 'playgame', 'room_id': room_id})
+        self.__start_game(room_id)
+
+    def __start_game(self, room_id: 'str'):
+        channels = rooms[room_id]
+        first_turn = random.choice(channels)
+        player_ids: 'list[str]' = []
+        for channel in channels:
+            player_ids.append(f'{channel.addr[0]}:{str(channel.addr[1])}')
+        for channel in channels:
+            opponent_id = player_ids[0]
+            if player_ids[0] == f'{channel.addr[0]}:{str(channel.addr[1])}':
+                opponent_id = player_ids[1]
+            channel.Send({'action': 'playgameinfo',
+                          'player_id': f'{channel.addr[0]}:{str(channel.addr[1])}',
+                          'opponent_id': opponent_id,
+                          'current_turn_player_id': f'{first_turn.addr[0]}:{str(first_turn.addr[1])}'})
 
 
 class GameServer(Server):

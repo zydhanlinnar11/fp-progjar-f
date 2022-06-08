@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from os import system
 from PodSixNet.Connection import ConnectionListener, connection
 
+from entities import Player
+
 
 class BaseScene(ABC):
     def __init__(self, network_client):
@@ -91,7 +93,13 @@ class JoinRoomScene(BaseScene):
 class InGameScene(BaseScene):
     def execute_scene(self):
         system('cls')
-        print("yok maen")
+        print("waiting for network")
+        self._wait_network_result()
 
     def handle_network(self, data):
-        pass
+        if data['action'] == 'playgameinfo':
+            self._waiting_for_response = False
+            # system('cls')
+            player = Player(data['player_id'])
+            opponent = Player(data['opponent_id'])
+            print(data)
