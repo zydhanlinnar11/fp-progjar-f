@@ -7,7 +7,7 @@ from typing import Tuple
 from PodSixNet.Channel import Channel
 from PodSixNet.Server import Server
 
-from entities import Player
+from entities import Dice, Player
 
 SERVER_HOST: "str" = "localhost"
 SERVER_PORT: "int" = 5071
@@ -54,6 +54,19 @@ class ClientChannel(Channel):
         for channel in rooms[room_id]:
             channel.Send({'action': 'playgame', 'room_id': room_id})
         self.__start_game(room_id)
+
+    def Network_rolldice(self, data: 'dict'):
+        dice_result = Dice().roll()
+        room_id = data['room_id']
+        channels = rooms[room_id]
+        next_turn: 'str' = ''
+        for channel in channels:
+            if f'{channel.addr[0]}:{str(channel.addr[1])}' != f'{self.addr[0]}:{str(self.addr[1])}':
+                next_turn = f'{channel.addr[0]}:{str(channel.addr[1])}'
+                break
+        for channel in channels:
+            channel.Send({'action': 'diceresult', 'data': str(
+                dice_result), 'current_turn_player_id': next_turn})
 
     def __start_game(self, room_id: 'str'):
         channels = rooms[room_id]

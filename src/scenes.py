@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from os import system
+from typing import Optional
 from PodSixNet.Connection import ConnectionListener, connection
 
-from entities import Player
+from entities import Board, Player
 
 
 class BaseScene(ABC):
-    def __init__(self, network_client):
+    def __init__(self, network_client: 'ConnectionListener'):
         self._network_client = network_client
         self._scene = self
         self._waiting_for_response = False
@@ -50,6 +51,10 @@ class MainMenuScene(BaseScene):
 
 
 class CreateRoomScene(BaseScene):
+    def __init__(self, network_client: 'ConnectionListener'):
+        super().__init__(network_client)
+        self.__room_id: 'Optional[str]' = None
+
     def execute_scene(self):
         system('cls')
         self._network_client.Send({'action': 'createroom'})
@@ -58,20 +63,25 @@ class CreateRoomScene(BaseScene):
     def handle_network(self, data):
         if data['action'] == 'createroomresponse':
             self._waiting_for_response = False
-            room_id = data['roomid']
-            print(f'Room Code: {room_id}')
+            self.__room_id = data['roomid']
+            print(f'Room Code: {self.__room_id}')
             self._wait_network_result()
         elif data['action'] == 'playgame':
             self._waiting_for_response = False
-            scene = InGameScene(self._network_client)
+            scene = InGameScene(self._network_client, self.__room_id)
             self._network_client.change_scene(scene)
             scene.execute_scene()
 
 
 class JoinRoomScene(BaseScene):
+    def __init__(self, network_client: 'ConnectionListener'):
+        super().__init__(network_client)
+        self.__room_id: 'Optional[str]' = None
+
     def __request_room_id(self):
-        room_id = input("Enter room code: ")
-        self._network_client.Send({'action': 'joinroom', 'room_id': room_id})
+        self.__room_id = input("Enter room code: ")
+        self._network_client.Send(
+            {'action': 'joinroom', 'room_id': self.__room_id})
         self._wait_network_result()
 
     def execute_scene(self):
@@ -85,21 +95,54 @@ class JoinRoomScene(BaseScene):
             self.__request_room_id()
         elif data['action'] == 'playgame':
             self._waiting_for_response = False
-            scene = InGameScene(self._network_client)
+            scene = InGameScene(self._network_client, self.__room_id)
             self._network_client.change_scene(scene)
             scene.execute_scene()
 
 
 class InGameScene(BaseScene):
+    def __init__(self, network_client: 'ConnectionListener', room_id: 'str'):
+        super().__init__(network_client)
+        self.__board: 'Optional[Board]' = None
+        self.__current_turn: 'str' = None
+        self.__player: 'Optional[Player]' = None
+        self.__room_id: 'str' = room_id
+
     def execute_scene(self):
         system('cls')
         print("waiting for network")
         self._wait_network_result()
 
     def handle_network(self, data):
+        # print(data)
         if data['action'] == 'playgameinfo':
             self._waiting_for_response = False
             # system('cls')
-            player = Player(data['player_id'])
-            opponent = Player(data['opponent_id'])
-            print(data)
+            player = Player(data['player_id'], 'player')
+            opponent = Player(data['opponent_id'], 'opponent')
+            self.__current_turn = data['current_turn_player_id']
+            self.__board = Board([player, opponent])
+            self.__player = player
+            self.__handle_roll_dice()
+        elif data['action'] == 'diceresult':
+            self._waiting_for_response = False
+            dice_result = int(data['data'])
+            current_player = self.__board.getPlayer(self.__current_turn)
+            self.__board.movePlayer(current_player, dice_result)
+            self.__current_turn = data['current_turn_player_id']
+            print(f'{current_player.get_name()} dapat dadu {str(dice_result)}')
+            self.__handle_roll_dice()
+
+    def __handle_roll_dice(self):
+        players = self.__board.getPlayers()
+        for player in players:
+            print(
+                f'{player.get_name()} position: {self.__board.getPlayerPosition(player.get_id())}')
+        if self.__player.get_id() == self.__current_turn:
+            input("Your turn, press enter to roll dice")
+            self._network_client.Send(
+                {'action': 'rolldice', 'room_id': self.__room_id})
+            self._wait_network_result()
+        else:
+            print("Waiting for opponent turn")
+            self._wait_network_result()

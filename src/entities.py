@@ -30,7 +30,7 @@ class Board:
             self.__playerPosition[player.get_id()] = 0
 
     def getPlayer(self, playerId: 'str') -> Player:
-        for player in self.__playerPosition:
+        for player in self.__players:
             if player.get_id() == playerId:
                 return player
 
@@ -55,3 +55,6 @@ class Board:
             dest = 2 * self.__size - position
 
         self.__playerPosition[player.get_id()] = dest
+
+    def getPlayers(self) -> list[Player]:
+        return self.__players
