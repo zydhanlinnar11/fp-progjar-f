@@ -22,10 +22,9 @@ class Character:
         return self.__player_id
 
 class CharacterMovementType(Enum):
-    MAJU = 1
-    MUNDUR = 2
-    KEPLESET = 3
-    NAIK_TANGGA = 4
+    BIASA = 1
+    KEPLESET = 2
+    NAIK_TANGGA = 3
 
 class CharacterMovement:
     def __init__(self, type: 'CharacterMovementType', destination: 'int') -> None:
