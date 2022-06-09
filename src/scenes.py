@@ -34,15 +34,18 @@ class MainMenuScene(BaseScene):
         print("mirzaq19 and zydhanlinnar11")
         print("1. Create Room")
         print("2. Join Room")
+        print("3. Exit")
         inp = input()
-        while int(inp) not in [1, 2]:
+        while int(inp) not in [1, 2, 3]:
             print('seng nggenah blog')
             inp = input()
         scene: BaseScene
         if inp == '1':
             scene = CreateRoomScene(self._network_client)
-        else:
+        elif inp == '2':
             scene = JoinRoomScene(self._network_client)
+        else:
+            scene = EndingScene(self._network_client)
         self._network_client.change_scene(scene)
         scene.execute_scene()
 
@@ -146,3 +149,14 @@ class InGameScene(BaseScene):
         else:
             print("Waiting for opponent turn")
             self._wait_network_result()
+
+
+class EndingScene(BaseScene):
+    def __init__(self, network_client: 'ConnectionListener'):
+        super().__init__(network_client)
+
+    def execute_scene(self):
+        print("Terimakasih telah memainkan game kami :-)")
+
+    def handle_network(self, data):
+        pass
