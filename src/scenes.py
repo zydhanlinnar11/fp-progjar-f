@@ -59,7 +59,7 @@ class CreateRoomScene(BaseScene):
         self.__room_id: 'Optional[str]' = None
 
     def execute_scene(self):
-        system('cls')
+        # system('cls')
         self._network_client.Send({'action': 'createroom'})
         self._wait_network_result()
 
@@ -69,11 +69,11 @@ class CreateRoomScene(BaseScene):
             self.__room_id = data['roomid']
             print(f'Room Code: {self.__room_id}')
             self._wait_network_result()
-        elif data['action'] == 'playgame':
+        elif data['action'] == 'playgameinfo':
             self._waiting_for_response = False
             scene = InGameScene(self._network_client, self.__room_id)
             self._network_client.change_scene(scene)
-            scene.execute_scene()
+            scene.execute_scene(data)
 
 
 class JoinRoomScene(BaseScene):
@@ -88,19 +88,19 @@ class JoinRoomScene(BaseScene):
         self._wait_network_result()
 
     def execute_scene(self):
-        system('cls')
+        # system('cls')
         self.__request_room_id()
 
     def handle_network(self, data):
         if data['action'] == 'joinroomerror':
-            system('cls')
+            # system('cls')
             print(data['message'])
             self.__request_room_id()
-        elif data['action'] == 'playgame':
+        elif data['action'] == 'playgameinfo':
             self._waiting_for_response = False
             scene = InGameScene(self._network_client, self.__room_id)
             self._network_client.change_scene(scene)
-            scene.execute_scene()
+            scene.execute_scene(data)
 
 
 class InGameScene(BaseScene):
@@ -111,16 +111,15 @@ class InGameScene(BaseScene):
         self.__player: 'Optional[Player]' = None
         self.__room_id: 'str' = room_id
 
-    def execute_scene(self):
-        system('cls')
-        print("waiting for network")
-        self._wait_network_result()
+    def execute_scene(self, data):
+        # system('cls')
+        self.handle_network(data)
 
     def handle_network(self, data):
         # print(data)
         if data['action'] == 'playgameinfo':
             self._waiting_for_response = False
-            # system('cls')
+            # # system('cls')
             player = Player(data['player_id'], 'player')
             opponent = Player(data['opponent_id'], 'opponent')
             self.__current_turn = data['current_turn_player_id']

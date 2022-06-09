@@ -51,8 +51,6 @@ class ClientChannel(Channel):
                       'message': "Room is full"})
             return
         rooms[room_id].append(self)
-        for channel in rooms[room_id]:
-            channel.Send({'action': 'playgame', 'room_id': room_id})
         self.__start_game(room_id)
 
     def Network_rolldice(self, data: 'dict'):
@@ -81,7 +79,8 @@ class ClientChannel(Channel):
             channel.Send({'action': 'playgameinfo',
                           'player_id': f'{channel.addr[0]}:{str(channel.addr[1])}',
                           'opponent_id': opponent_id,
-                          'current_turn_player_id': f'{first_turn.addr[0]}:{str(first_turn.addr[1])}'})
+                          'current_turn_player_id': f'{first_turn.addr[0]}:{str(first_turn.addr[1])}',
+                          'room_id': room_id})
 
 
 class GameServer(Server):

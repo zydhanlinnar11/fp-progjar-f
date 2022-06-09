@@ -12,6 +12,7 @@ class GameClient(ConnectionListener):
         self.__scene: 'BaseScene' = MainMenuScene(self)
 
     def Network(self, data):
+        print(data)
         self.__scene.handle_network(data)
 
     def run_game(self):
