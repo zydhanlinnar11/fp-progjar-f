@@ -119,7 +119,7 @@ class InGameScene(BaseScene):
         # print(data)
         if data['action'] == 'playgameinfo':
             self._waiting_for_response = False
-            # # system('cls')
+            system('cls')
             player = Player(data['player_id'], 'player')
             opponent = Player(data['opponent_id'], 'opponent')
             self.__current_turn = data['current_turn_player_id']
@@ -130,9 +130,11 @@ class InGameScene(BaseScene):
             self._waiting_for_response = False
             dice_result = int(data['data'])
             current_player = self.__board.getPlayer(self.__current_turn)
-            self.__board.movePlayer(current_player, dice_result)
+            move_status = self.__board.movePlayer(current_player, dice_result)
             self.__current_turn = data['current_turn_player_id']
             print(f'{current_player.get_name()} dapat dadu {str(dice_result)}')
+            if move_status == 1: print(f'Ouh, {current_player.get_name()} got snake\n')
+            elif move_status == 2: print(f'Wow, {current_player.get_name()} got ladder\n')
             self.__handle_roll_dice()
 
     def __handle_roll_dice(self):
@@ -140,6 +142,7 @@ class InGameScene(BaseScene):
         for player in players:
             print(
                 f'{player.get_name()} position: {self.__board.getPlayerPosition(player.get_id())}')
+        print()
         if self.__player.get_id() == self.__current_turn:
             input("Your turn, press enter to roll dice")
             self._network_client.Send(

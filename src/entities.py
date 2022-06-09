@@ -43,17 +43,21 @@ class Board:
     def isLadder(self, position: 'int'):
         return self.__ladders.get(position) != None
 
-    def movePlayer(self, player: 'Player', diceResult: 'int') -> None:
+    def movePlayer(self, player: 'Player', diceResult: 'int') -> int:
+        status = 0
         position = self.getPlayerPosition(player.get_id()) + diceResult
 
         if(self.isSnake(position)):
+            status = 1
             position = self.__snakes.get(position)
         elif(self.isLadder(position)):
+            status = 2
             position = self.__ladders.get(position)
         elif(position > self.__size):
             position = 2 * self.__size - position
 
         self.__playerPosition[player.get_id()] = position
+        return status
 
     def getPlayers(self) -> list[Player]:
         return self.__players
