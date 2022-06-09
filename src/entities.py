@@ -29,6 +29,9 @@ class Board:
         for player in players:
             self.__playerPosition[player.get_id()] = 0
 
+    def getBoardSize(self) -> int:
+        return self.__size
+
     def getPlayer(self, playerId: 'str') -> Player:
         for player in self.__players:
             if player.get_id() == playerId:

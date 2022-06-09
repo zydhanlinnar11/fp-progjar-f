@@ -135,7 +135,14 @@ class InGameScene(BaseScene):
             print(f'{current_player.get_name()} dapat dadu {str(dice_result)}')
             if move_status == 1: print(f'Ouh, {current_player.get_name()} got snake\n')
             elif move_status == 2: print(f'Wow, {current_player.get_name()} got ladder\n')
-            self.__handle_roll_dice()
+
+            if self.__board.getPlayerPosition(current_player.get_id()) == self.__board.getBoardSize():
+                print(f'{current_player.get_name()} is Win!\n')
+                scene = EndingScene(self._network_client)
+                self._network_client.change_scene(scene)
+                scene.execute_scene()
+            else:
+                self.__handle_roll_dice()
 
     def __handle_roll_dice(self):
         players = self.__board.getPlayers()
